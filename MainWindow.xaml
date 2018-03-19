@@ -1,0 +1,14 @@
+﻿<Window x:Class="Kohonen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Kohonen"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1000">
+    <Grid>
+        <!-- Folder election button -->
+        <Button Height="25" Width="170" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
+        <Label Name="FolderImportLabel" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+    </Grid>
+</Window>
