@@ -39,6 +39,22 @@ namespace Kohonen
          *  after all iterations are executed
          */
 
-        public static double _dLearningFactor = 0.01;
+        public static double _dInitialLearningFactor = 0.01, _dFinalLearningFactor = 0.001;
+
+        /*  Use :               KohonenAlgorithm
+        *  Definition :         Initial and final radius (in cells) within which the cells will modified after an epoch to match the winner
+        *  Recommended value :  Depending on the deepness the network is designed to have, as well as the expected number of labels, 
+        *  in this case will be initialized as half of the map's size
+        */
+
+        public static int _nInitialRadius = _nKohonenMapSize / 2,  _nFinalRadius = 1;
+
+        /*  Use :               KohonenAlgorithm
+         *  Definition :        Number of epochs until the influence radius, as well as the learning factor, converge
+         *  Recommended value : Will depend on the number of epochs, generally 70% / 80%
+         */
+
+        public static int _nEpochsUntilConvergence = 70;
+
     }
 }
