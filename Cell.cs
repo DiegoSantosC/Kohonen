@@ -16,16 +16,19 @@ namespace Kohonen
 
     class Cell
     {
-        private Bitmap content;
+        private float[][][] content;
         private int _nindex;
+        private int posX, posY;
 
-        public Cell(Bitmap source)
+        public Cell(float[][][] source, int x, int y)
         {
             content = source;
-            _nindex = 0;
+            _nindex = -1;
+            posX = x;
+            posY = y;
         }
 
-        public Bitmap getSource()
+        public float[][][] getSource()
         {
             return content;
         }
@@ -40,9 +43,30 @@ namespace Kohonen
             _nindex = index;
         }
 
-        public void setBitmap(Bitmap bmp)
+        public void setBitmap(float[][][] vector)
         {
-            content = bmp;
+            content = vector;
+        }
+
+        public int getX()
+        {
+            return posX;
+        }
+        public int getY()
+        {
+            return posY;
+        }
+
+        public void SaveAsBmp(string folder)
+        {
+            int h = content.Length;
+            int w = content[0].Length;
+            Bitmap bmp = new Bitmap(h, w);
+
+            for (int i = 0; i < h; i++)
+                for (int j = 0; j < w; j++) bmp.SetPixel(i, j, Color.FromArgb((int)content[i][j][0], (int)content[i][j][1], (int)content[i][j][2]));
+
+            bmp.Save(folder);
         }
     }
 }

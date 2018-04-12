@@ -18,6 +18,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.ComponentModel;
 
 namespace Kohonen
 {
@@ -35,12 +36,25 @@ namespace Kohonen
     public partial class MainWindow : Window
     {
         private LabelingHandler lh;
-
+        private KohonenNetwork kn;
+        private bool started;
+        
         public MainWindow()
         {
             InitializeComponent();
 
-            //this.Hide();
+        }
+
+        private void Save_Button_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog sfd = new FolderBrowserDialog();
+
+            DialogResult res = sfd.ShowDialog();
+
+            if (!string.IsNullOrWhiteSpace(sfd.SelectedPath))
+            {
+                FolderSaveLabel.Content = sfd.SelectedPath;
+            }
         }
 
         private void Source_Button_Click(object sender, RoutedEventArgs e)
@@ -53,13 +67,16 @@ namespace Kohonen
             {
                 FolderImportLabel.Content = sfd.SelectedPath;
 
-                ProcessInput();
             }
+        }
+
+        private void Start_Button_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessInput();
         }
 
         private void ProcessInput()
         {
-
             string folderImport = (string)FolderImportLabel.Content;
 
             if (folderImport == "Not defined")
@@ -109,19 +126,23 @@ namespace Kohonen
 
             labels.Add("Type A");
             labels.Add("Type B");
-            labels.Add("Type B");
             labels.Add("Type C");
+            labels.Add("");
             labels.Add("Type A");
             labels.Add("Type B");
-            labels.Add("Type D");
+            labels.Add("");
             labels.Add("Type E");
             labels.Add("Type E");
             labels.Add("Type A");
             labels.Add("Type B");
 
-             lh = new LabelingHandler(labels);
+            string folderSave = (string)FolderSaveLabel.Content;
 
-            KohonenNetwork kn = new KohonenNetwork(sourceData, lh);
+            lh = new LabelingHandler(labels);
+
+            kn = new KohonenNetwork(sourceData, lh, folderSave);
+
+            started = true;
         }
 
         private System.Drawing.Image getImageFromFile(string path)
@@ -136,30 +157,41 @@ namespace Kohonen
             int size = AdvancedOptions._nBitmapSize;
 
             System.Drawing.Rectangle destRect = new System.Drawing.Rectangle(0, 0, size, size);
-            Bitmap destImage = new Bitmap(size, size);
-
-            destImage.SetResolution(originalImage.HorizontalResolution, originalImage.VerticalResolution);
-
-            using (var graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(destImage, destRect, 0, 0, originalImage.Width, originalImage.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-            }
-
-            string folder = System.IO.Path.Combine("C:", "Users", "HP SCDS", "Desktop");
-
-            //destImage.Save(folder + "Test.bmp");
+            Bitmap destImage = new Bitmap(originalImage, size, size);
 
             return destImage;
+        }
+
+        // UI Closing handling
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (kn.isRunning() && started)
+            {
+                string msg = "Training process running. Close and kill?";
+
+                MessageBoxResult res =
+                  System.Windows.MessageBox.Show(
+                      msg,
+                      "Closing Dialog",
+                      MessageBoxButton.YesNo,
+                      MessageBoxImage.Warning);
+
+                if (res == MessageBoxResult.No)
+                {
+                    e.Cancel = true;
+                }
+
+                else
+                {
+                    e.Cancel = false;
+                    kn.getThread().Abort();
+                }
+            }
+            else
+            {
+                e.Cancel = false;
+            }
         }
     }
 }

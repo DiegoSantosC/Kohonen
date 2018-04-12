@@ -5,10 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Kohonen"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1000">
+        Title="MainWindow" Height="700" Width="1000"
+        Closing="Window_Closing">
     <Grid>
         <!-- Folder election button -->
         <Button Height="25" Width="170" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
         <Label Name="FolderImportLabel" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+        <!-- Folder save election button -->
+        <Button Height="25" Width="170" HorizontalAlignment ="Left" FontSize="17" Margin="500,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
+        <Label Name="FolderSaveLabel" Margin="700,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+        <!-- Start button -->
+        <Button Height="25" Width="100" HorizontalAlignment ="Center" FontSize="17" Margin="0,200,0,0" Style="{StaticResource button1Style}" Click="Start_Button_Click">Start</Button>
     </Grid>
 </Window>

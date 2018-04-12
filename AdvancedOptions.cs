@@ -17,7 +17,10 @@ namespace Kohonen
          *  Recommended value : Depending on the deepness wanted to obtain from the network
          */
 
-        public static int _nNumberOfEpochs = 100;
+
+        //    !!!!!!!!! SET TO 100 
+
+        public static int _nNumberOfEpochs = 10;
 
         /*  Use :               KohonenAlgorithm
          *  Definition :        Size of the Kohonen map
@@ -39,7 +42,7 @@ namespace Kohonen
          *  after all iterations are executed
          */
 
-        public static double _dInitialLearningFactor = 0.01, _dFinalLearningFactor = 0.001;
+        public static double _dInitialLearningFactor = 0.1, _dFinalLearningFactor = 0.001;
 
         /*  Use :               KohonenAlgorithm
         *  Definition :         Initial and final radius (in cells) within which the cells will modified after an epoch to match the winner
@@ -56,5 +59,6 @@ namespace Kohonen
 
         public static int _nEpochsUntilConvergence = 70;
 
+        public static double _dMaxRadiusFactor = 0.5;
     }
 }

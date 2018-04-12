@@ -68,6 +68,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cell.cs" />
+    <Compile Include="DataHandler.cs" />
     <Compile Include="KohonenNetwork.cs" />
     <Compile Include="LabelingHandler.cs" />
     <Compile Include="MainWindow.xaml.cs">
