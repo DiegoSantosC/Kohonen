@@ -8,15 +8,59 @@
         Title="MainWindow" Height="700" Width="1000"
         Closing="Window_Closing">
     <Grid>
-        <!-- Folder election button -->
-        <Button Height="25" Width="170" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
-        <Label Name="FolderImportLabel" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
 
-        <!-- Folder save election button -->
-        <Button Height="25" Width="170" HorizontalAlignment ="Left" FontSize="17" Margin="500,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
-        <Label Name="FolderSaveLabel" Margin="700,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
 
-        <!-- Start button -->
-        <Button Height="25" Width="100" HorizontalAlignment ="Center" FontSize="17" Margin="0,200,0,0" Style="{StaticResource button1Style}" Click="Start_Button_Click">Start</Button>
+        </Grid.RowDefinitions>
+
+        <!-- HP Aesthetics Border -->
+        <Border Grid.Row="0" Background="#00BFFF"/>
+        <StackPanel Name="LogoSP" Grid.Row="0" HorizontalAlignment="Left" Height="70" Width="70"/>
+
+        <Label HorizontalAlignment="Center" Grid.Row="1" Margin="10" VerticalAlignment="Bottom" FontSize="12" >Pick a mode</Label>
+
+        <Canvas Name="TestMode" Grid.Row="2" Width="100" VerticalAlignment="Top" Margin="-100,0,0,0" Height="30">
+            <Border BorderBrush="Black" BorderThickness="3" Height="30" Width="100"></Border>
+            <Label HorizontalAlignment="Center" Margin="28, 0, 0, 0" VerticalAlignment="Center" FontSize="15" >Train</Label>
+        </Canvas>
+
+        <Canvas Name="TrainMode" Grid.Row="2" Width="100" VerticalAlignment="Top" Margin="100,0,0,0" Height="30">
+            <Border BorderBrush="Black" BorderThickness="3" Height="30" Width="100"></Border>
+            <Label HorizontalAlignment="Center" Margin="28, 0, 0, 0" VerticalAlignment="Center" FontSize="15" >Test</Label>
+        </Canvas>
+
+        <Grid Name ="TrainGrid" Visibility="Visible" Margin="50" Grid.Row="2">
+            
+            <!-- Title label -->
+            <Label Grid.Row="0" FontSize="25" FontFamily=""></Label>
+            
+            <!-- Folder election button -->
+            <Button Height="25" Width="170" Grid.Row="2" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
+            <Label Name="TrainFolderImportLabel" Grid.Row="2" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+            <!-- Folder save election button -->
+            <Button Height="25" Width="170" Grid.Row="2"  HorizontalAlignment ="Left" FontSize="17" Margin="500,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
+            <Label Name="TrainFolderSaveLabel" Grid.Row="2"  Margin="700,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+            <!-- Start button -->
+            <Button Height="25" Width="100"  Grid.Row="2" HorizontalAlignment ="Center" FontSize="17" Margin="0,200,0,0" Style="{StaticResource button1Style}" Click="Start_Button_Click">Start</Button>
+        </Grid>
+
+        <Grid Name ="TestGrid" Visibility="Hidden" Margin="50" Grid.Row="2">
+            <!-- Folder election button -->
+            <Button Height="25" Width="170" Grid.Row="2" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
+            <Label Name="TestFolderImportLabel" Grid.Row="2" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+            <!-- Folder save election button -->
+            <Button Height="25" Width="170" Grid.Row="2"  HorizontalAlignment ="Left" FontSize="17" Margin="500,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
+            <Label Name="TestFolderSaveLabel" Grid.Row="2"  Margin="700,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+            <!-- Start button -->
+            <Button Height="25" Width="100"  Grid.Row="2" HorizontalAlignment ="Center" FontSize="17" Margin="0,200,0,0" Style="{StaticResource button1Style}" Click="Start_Button_Click">Start</Button>
+        </Grid>
     </Grid>
 </Window>

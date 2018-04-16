@@ -28,6 +28,28 @@ namespace Kohonen
             posY = y;
         }
 
+        public Cell(Bitmap src, int label, int x, int y)
+        {
+            int h = src.Height;
+            int w = src.Width;
+
+            float[][][] source = new float[h][][];
+
+            for (int i = 0; i < h; i++)
+            {
+                source[i] = new float[w][];
+                for (int j = 0; j < w; j++)
+                {
+                    source[i][j] = new float[] { src.GetPixel(i, j).R, src.GetPixel(i, j).G, src.GetPixel(i, j).B };
+                }
+            }
+
+            content = source;
+            posX = x;
+            posY = y;
+            _nindex = label;
+        }
+
         public float[][][] getSource()
         {
             return content;

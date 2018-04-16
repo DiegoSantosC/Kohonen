@@ -49,5 +49,30 @@ namespace Kohonen
         {
             return labels;
         }
+
+        // Conversion in index and label list avoids repetition in an output situation
+        public List<int> getConvertedIndexes()
+        {
+            List<int> returnable = new List<int>();
+
+            for (int i = 0; i < indexes.Count; i++)
+            {
+                if (!returnable.Contains(indexes[i])) returnable.Add(indexes[i]);
+            }
+
+            return returnable;
+        }
+
+        public List<string> getConvertedLabels()
+        {
+            List<string> returnable = new List<string>();
+
+            for (int i = 0; i < indexes.Count; i++)
+            {
+                if (!returnable.Contains(labels[i])) returnable.Add(labels[i]);
+            }
+
+            return returnable;
+        }
     }
 }

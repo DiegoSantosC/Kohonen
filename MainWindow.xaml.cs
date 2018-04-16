@@ -43,6 +43,60 @@ namespace Kohonen
         {
             InitializeComponent();
 
+            started = false;
+            Logo_Init();
+
+            Mode_Init();
+        }
+
+        private void Mode_Init()
+        {
+            TrainMode.MouseLeftButtonDown += new MouseButtonEventHandler(SetTrainMode);
+            TestMode.MouseLeftButtonDown += new MouseButtonEventHandler(SetTestMode);
+
+        }
+
+        private void SetTrainMode(object sender, MouseButtonEventArgs e)
+        {
+            TrainMode.Background = System.Windows.Media.Brushes.DeepSkyBlue;
+            TestMode.Background = System.Windows.Media.Brushes.White;
+
+            TrainGrid.Visibility = Visibility.Visible;
+
+            WhipeTestGrid();
+        }
+
+        private void SetTestMode(object sender, MouseButtonEventArgs e)
+        {
+            TrainMode.Background = System.Windows.Media.Brushes.White;
+            TestMode.Background = System.Windows.Media.Brushes.DeepSkyBlue;
+
+            TestGrid.Visibility = Visibility.Visible;
+
+            WhipeTrainGrid();
+        }
+
+        private void WhipeTestGrid()
+        {
+            TestGrid.Visibility = Visibility.Hidden;
+        }
+
+        private void WhipeTrainGrid()
+        {
+            TrainGrid.Visibility = Visibility.Hidden;
+        }
+        private void Logo_Init()
+        {
+            System.Windows.Controls.Image logo = new System.Windows.Controls.Image();
+            BitmapImage src = new BitmapImage();
+            src.BeginInit();
+            src.UriSource = new Uri(AppDomain.CurrentDomain.BaseDirectory + @"Resources\HP_logo.png", UriKind.Absolute);
+            src.CacheOption = BitmapCacheOption.OnLoad;
+            src.EndInit();
+            logo.Source = src;
+            logo.Stretch = Stretch.Uniform;
+
+            LogoSP.Children.Add(logo);
         }
 
         private void Save_Button_Click(object sender, RoutedEventArgs e)
@@ -72,69 +126,20 @@ namespace Kohonen
 
         private void Start_Button_Click(object sender, RoutedEventArgs e)
         {
-            ProcessInput();
+            Test();
         }
 
-        private void ProcessInput()
+       private void Train()
         {
+            // not defined!!!
             string folderImport = (string)FolderImportLabel.Content;
 
-            if (folderImport == "Not defined")
-            {
-                System.Windows.MessageBox.Show(" Invalid directory path");
-                return;
-            }
+            object[] returned = DataHandler.ProcessInputTrain(folderImport);
 
-            string[] files = Directory.GetFiles(folderImport);
+            if(returned == null) { return; }
 
-            if (files.Length == 0) { System.Windows.MessageBox.Show(folderImport + " is empty"); return; }
-
-            List<Bitmap> sourceData = new List<Bitmap>();
-            List<string> labels = new List<string>();
-
-            for (int i = 0; i < files.Length; i++)
-            {
-                if (File.Exists(files[i]))
-                {
-                    string[] extension = files[i].Split('.');
-
-                    // We will only accept as viable files for the analysis images (of a wide range of extensions)
-
-                    if (extension[extension.Length - 1] != "png" && extension[extension.Length - 1] != "jpg" && extension[extension.Length - 1] != "jpeg" &&
-                        extension[extension.Length - 1] != "bmp")
-                    {
-                        System.Windows.MessageBox.Show(files[i] + " has not the right file extension");
-                        return;
-
-                    }
-                    else
-                    {
-                        System.Drawing.Image img = getImageFromFile(files[i]);
-                        sourceData.Add(ResizeAndConvert(img));
-
-                    }
-                }
-                else
-                {
-
-                    System.Windows.MessageBox.Show(files[i] + " is not a valid file");
-                    return;
-                }
-            }
-
-            // Label list will be filled manually for testing purposes s
-
-            labels.Add("Type A");
-            labels.Add("Type B");
-            labels.Add("Type C");
-            labels.Add("");
-            labels.Add("Type A");
-            labels.Add("Type B");
-            labels.Add("");
-            labels.Add("Type E");
-            labels.Add("Type E");
-            labels.Add("Type A");
-            labels.Add("Type B");
+            List<string> labels = (List<string>)returned[0];
+            List<Bitmap> sourceData = (List<Bitmap>)returned[1];
 
             string folderSave = (string)FolderSaveLabel.Content;
 
@@ -143,30 +148,37 @@ namespace Kohonen
             kn = new KohonenNetwork(sourceData, lh, folderSave);
 
             started = true;
+
         }
 
-        private System.Drawing.Image getImageFromFile(string path)
+        private void Test()
         {
-            System.Drawing.Image img = System.Drawing.Image.FromFile(path);
+            // not defined!!
+            string folderImport = (string)FolderImportLabel.Content;
+            // string testImagePath = (string)().Content;
 
-            return img;
+            Bitmap testImage = (Bitmap)Bitmap.FromFile(System.IO.Path.Combine("C: ","Users","HP SCDS","Desktop","Dismissed_Captures", "Close_Image.png"));
+
+            testImage = new Bitmap(testImage, AdvancedOptions._nBitmapSize, AdvancedOptions._nBitmapSize);
+
+            object[] returned = DataHandler.ProcessInputTest(folderImport);
+
+            if (returned == null) { return; }
+
+            List<string> labels = (List<string>)returned[0];
+            Cell[,] map = (Cell[,])returned[1];
+            
+            string folderSave = (string)FolderSaveLabel.Content;
+
+            lh = new LabelingHandler(labels);
+            kn = new KohonenNetwork(testImage, lh, map, folderSave);
+
         }
-
-        public Bitmap ResizeAndConvert(System.Drawing.Image originalImage)
-        {
-            int size = AdvancedOptions._nBitmapSize;
-
-            System.Drawing.Rectangle destRect = new System.Drawing.Rectangle(0, 0, size, size);
-            Bitmap destImage = new Bitmap(originalImage, size, size);
-
-            return destImage;
-        }
-
         // UI Closing handling
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (kn.isRunning() && started)
+            if (started && kn.isRunning())
             {
                 string msg = "Training process running. Close and kill?";
 

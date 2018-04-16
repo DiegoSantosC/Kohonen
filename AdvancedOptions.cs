@@ -59,6 +59,11 @@ namespace Kohonen
 
         public static int _nEpochsUntilConvergence = 70;
 
+        /*  Use :              KohonenAlgorithm
+        *   Definition :        Factor that defines the rate in which the intensity of the modification after the best match in an epoch is found will diminish
+        *                       when getting far from that best cell
+        *   Recommended value : 0.5, will depend on the global impact to the map we want to achieve in an iteration
+        */
         public static double _dMaxRadiusFactor = 0.5;
     }
 }

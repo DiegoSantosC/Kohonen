@@ -41,12 +41,12 @@ namespace Kohonen
         // Trained version of the KohonenNetwork for it to be tested against a new input.
         // As such, the trained network must be added as a parameter
 
-        public KohonenNetwork(Bitmap data, LabelingHandler labels, Bitmap[,] srcMap, string save)
+        public KohonenNetwork(Bitmap data, LabelingHandler labels, Cell[,] srcMap, string save)
         {
             sourceData = new List<Bitmap> { data };
             lh = labels;
 
-            Init_Map(srcMap);
+            map = srcMap;
             outputFolder = save;
 
             Test_Network();
@@ -60,14 +60,6 @@ namespace Kohonen
 
             for (int i = 0; i < size; i++)
                 for (int j = 0; j < size; j++) map[i, j] = generateCell(i, j);
-        }
-
-        private void Init_Map(Bitmap[,] src)
-        {
-            map = new Cell[src.GetLength(0), src.GetLength(1)];
-
-            for (int i = 0; i < src.GetLength(0); i++)
-                for (int j = 0; j < src.GetLength(1); j++) map[i, j] = generateCell(src[i,j], i, j);
         }
 
         private double ComputeDistanceFactor(int currEpoch, double distance)
@@ -88,9 +80,12 @@ namespace Kohonen
 
         private void Test_Network()
         {
-            int[] bestMatch = FindBestMatch(sourceData[0],  0);
+            int[] bestMatch = FindBestMatch(sourceData[0],  -1);
 
             best = map[bestMatch[0], bestMatch[1]];
+
+            Console.WriteLine(best.getX() + " " + best.getY());
+            Console.WriteLine(best.getIndex());
 
         }
 
@@ -100,8 +95,7 @@ namespace Kohonen
 
             for (int i = 0; i < nIterations; i++) Execute_Epoch(i);
 
-            DataHandler dh = new DataHandler();
-            dh.CreateOutput(outputFolder, map, lh);
+            DataHandler.CreateOutput(outputFolder, map, lh);
 
             App.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background,
                      new Action(() => finishedTraining()));
@@ -113,11 +107,10 @@ namespace Kohonen
             {
                 // Best match is found attending to Euclidean distance
 
-                int[] bestMatch = FindBestMatch(sourceData[i], i);
+                int label = lh.getIndex(i);
 
-
-                map[bestMatch[0], bestMatch[1]].setIndex(lh.getIndex(i));
-
+                int[] bestMatch = FindBestMatch(sourceData[i], label);
+                
                 // The cell is labelled and it's neightbours modified
 
                 if (bestMatch[0] == -1)
@@ -127,13 +120,16 @@ namespace Kohonen
                     return;
                 }
 
+                map[bestMatch[0], bestMatch[1]].setIndex(label);
+                
+
                 ModifyMap(bestMatch, sourceData[i], epoch);
 
                 Console.WriteLine(epoch + " " + i);
             }
         }
 
-        private int[] FindBestMatch(Bitmap bitmap, int labelIndex)
+        private int[] FindBestMatch(Bitmap bitmap, int label)
         {
             int[] bestMatch = new int[2] { -1, -1};
             double bestDifference = double.MaxValue;
@@ -144,25 +140,18 @@ namespace Kohonen
                 {
                     // Take best match considering label
 
-                    if (map[i, j].getIndex() == -1 || map[i, j].getIndex() == lh.getIndex(labelIndex) || lh.getIndex(labelIndex) == -1)
+                    if ( label == -1 || map[i, j].getIndex() == -1 || map[i, j].getIndex() == label)
                     {
                         // If the cell's label is adequate, compute difference
 
                         double difference = ComputeDifference(bitmap, map[i, j].getSource());
 
-                        if (i == 0 && j == 0)
-                        {
-                            bestMatch = new int[] { 0, 0 };
-                            bestDifference = difference;
-                        }else
-                        {
-                            // If the difference is the least, take as winner
+                        // If the difference is the least, take as winner
 
-                            if (difference < bestDifference)
-                            {
-                                 bestMatch = new int[] { i, j };
-                                 bestDifference = difference;            
-                            }
+                        if (difference < bestDifference)
+                        {
+                            bestMatch = new int[] { i, j };
+                            bestDifference = difference;
                         }
                     }
                 }
@@ -218,18 +207,6 @@ namespace Kohonen
                 float newR = (float)(color1[0] + k * diffR * Math.Exp(distanceFactor * distance));
                 float newG = (float)(color1[1] + k * diffG * Math.Exp(distanceFactor * distance));
                 float newB = (float)(color1[2] + k * diffB * Math.Exp(distanceFactor * distance));
-
-                //if (distance < 5)
-                //{
-                //    Console.WriteLine(distance);
-                //    Console.WriteLine(diffR + " " + diffG + " " + diffB);
-                //    Console.WriteLine(k * diffR * Math.Exp(distanceFactor * distance) + " " + k * diffG * Math.Exp(distanceFactor * distance) + " " + k * diffB * Math.Exp(distanceFactor * distance));
-
-                //    Console.WriteLine(color1[0] + " -> " + newR);
-                //    Console.WriteLine(color1[1] + " -> " + newG);
-                //    Console.WriteLine(color1[2] + " -> " + newB);
-                //    Console.WriteLine();
-                //}
 
                 return new float[]{ newR, newG, newB };
             }
@@ -295,6 +272,7 @@ namespace Kohonen
 
             return new Cell(source, x, y);
         }
+
         private float[] generateRandomPixel(Random r)
         {
             float R = r.Next(0, 255);
