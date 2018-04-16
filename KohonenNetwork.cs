@@ -41,28 +41,29 @@ namespace Kohonen
         // Trained version of the KohonenNetwork for it to be tested against a new input.
         // As such, the trained network must be added as a parameter
 
-        public KohonenNetwork(Bitmap data, LabelingHandler labels, Cell[,] srcMap, string save)
+        public KohonenNetwork(Bitmap data, LabelingHandler labels, Cell[,] srcMap)
         {
             sourceData = new List<Bitmap> { data };
             lh = labels;
 
             map = srcMap;
-            outputFolder = save;
+            outputFolder = null;
 
             Test_Network();
         }
 
         private void Init_Map()
         {
-            int size = AdvancedOptions._nKohonenMapSize;
+            int sizeX = AdvancedOptions._nKohonenMapSizeX;
+            int sizeY = AdvancedOptions._nKohonenMapSizeY;
 
-            map = new Cell[size, size];
+            map = new Cell[sizeY, sizeX];
 
-            for (int i = 0; i < size; i++)
-                for (int j = 0; j < size; j++) map[i, j] = generateCell(i, j);
+            for (int i = 0; i < sizeY; i++)
+                for (int j = 0; j < sizeX; j++) map[i, j] = generateCell(i, j);
         }
 
-        private double ComputeDistanceFactor(int currEpoch, double distance)
+        private double ComputeDistanceFactor(int currEpoch)
         {
             // The distance factor will be computed so that the change applied to far away cells from the winner one is negligible,
             // and is exctracted from the formula "e^(c*dist(AB))" , being c the distance factor, and dist(AB) the Euclidean distance
@@ -71,8 +72,9 @@ namespace Kohonen
             if (currEpoch > AdvancedOptions._nEpochsUntilConvergence)
                 currEpoch = AdvancedOptions._nEpochsUntilConvergence;
 
-            double posEpoch = (AdvancedOptions._nEpochsUntilConvergence - currEpoch) / (AdvancedOptions._nEpochsUntilConvergence - 0);
-            double currRadius = AdvancedOptions._nFinalRadius + posEpoch * (AdvancedOptions._nInitialRadius - AdvancedOptions._nFinalRadius);
+            double posEpoch = ((double)(AdvancedOptions._nEpochsUntilConvergence - currEpoch)) / ((double)(AdvancedOptions._nEpochsUntilConvergence - 0));
+            double currRadius = AdvancedOptions._nFinalRadius + posEpoch * (AdvancedOptions._nInitialRadius - AdvancedOptions._nFinalRadius); // distance???????????????
+
             double F = Math.Log(AdvancedOptions._dMaxRadiusFactor) / (Math.Pow(currRadius, 2) + 1E-11);
 
             return F;
@@ -84,8 +86,8 @@ namespace Kohonen
 
             best = map[bestMatch[0], bestMatch[1]];
 
-            Console.WriteLine(best.getX() + " " + best.getY());
-            Console.WriteLine(best.getIndex());
+            //Console.WriteLine(best.getX() + " " + best.getY());
+            //Console.WriteLine(best.getIndex());
 
         }
 
@@ -103,7 +105,9 @@ namespace Kohonen
         
         private void Execute_Epoch(int epoch)
         {
-            for(int i = 0; i < sourceData.Count; i++)
+            double k = ComputeLearningFactor(epoch);
+
+            for (int i = 0; i < sourceData.Count; i++)
             {
                 // Best match is found attending to Euclidean distance
 
@@ -123,9 +127,11 @@ namespace Kohonen
                 map[bestMatch[0], bestMatch[1]].setIndex(label);
                 
 
-                ModifyMap(bestMatch, sourceData[i], epoch);
+                ModifyMap(bestMatch, sourceData[i], epoch, k, label);
 
                 Console.WriteLine(epoch + " " + i);
+                //Console.WriteLine(bestMatch[0] + " " + bestMatch[1]);
+                //Console.WriteLine();
             }
         }
 
@@ -162,41 +168,48 @@ namespace Kohonen
             return bestMatch;
         }
 
-        private void ModifyMap(int[] pos,  Bitmap sourceBmp, int currEpoch)
+        private void ModifyMap(int[] pos,  Bitmap sourceBmp, int currEpoch, double LF, int label)
         {
-            for(int i = 0; i < AdvancedOptions._nKohonenMapSize; i++)
+            for(int i = 0; i < AdvancedOptions._nKohonenMapSizeY; i++)
             {
-                for (int j = 0; j < AdvancedOptions._nKohonenMapSize; j++)
+                for (int j = 0; j < AdvancedOptions._nKohonenMapSizeX; j++)
                 {
-                    double distance = Math.Pow(pos[0] - i, 2) + Math.Pow(pos[1] - j, 2);
+                    double disY = Math.Abs(pos[0] - i);
+                    double disX = Math.Abs(pos[1] - j);
 
-                    ModifyCell(map[i,j], distance,  sourceBmp, currEpoch);
+                    disY = Math.Min(disY, AdvancedOptions._nKohonenMapSizeY - disY);
+                    disX = Math.Min(disX, AdvancedOptions._nKohonenMapSizeX - disX);
+                    
+                    double distance = Math.Pow(disY, 2) + Math.Pow(disX, 2);
+
+                    if(label == -1 || map[i, j].getIndex() == -1 || map[i, j].getIndex() == label)
+                    {
+                        ModifyCell(map[i, j], distance, sourceBmp, currEpoch, LF);
+                    }
                 }
             }
         }
 
-        private void ModifyCell(Cell cell, double distance, Bitmap sourceBmp, int currEpoch)
+        private void ModifyCell(Cell cell, double distance, Bitmap sourceBmp, int currEpoch, double LF)
         {
+            double distanceFactor = ComputeDistanceFactor(currEpoch);
+
             float[][][] bmp = cell.getSource();
 
             for(int i = 0; i < sourceBmp.Height; i++)
             {
                 for(int j = 0; j < sourceBmp.Width; j++)
                 {
-                    bmp[i][j] = ModifiedPixel(bmp[i][j], sourceBmp.GetPixel(i, j), distance, currEpoch);
+                    bmp[i][j] = ModifiedPixel(bmp[i][j], sourceBmp.GetPixel(i, j), distance, LF, distanceFactor);
                 }
             }
         }
 
-        private float[] ModifiedPixel(float[] color1, Color color2, double distance, int currEpoch)
+        private float[] ModifiedPixel(float[] color1, Color color2, double distance, double k, double distanceFactor)
         {
-            double k = ComputeLearningFactor(currEpoch);
-
             float diffR = color2.R - color1[0];
             float diffG = color2.G - color1[1];
             float diffB = color2.B - color1[2];
-
-            double distanceFactor = ComputeDistanceFactor(currEpoch, distance);
 
             if(distanceFactor == -1)
             {
@@ -216,7 +229,9 @@ namespace Kohonen
         {
             if (epoch > AdvancedOptions._nEpochsUntilConvergence) epoch = AdvancedOptions._nEpochsUntilConvergence;
 
-            return (AdvancedOptions._dFinalLearningFactor - AdvancedOptions._dInitialLearningFactor) * (epoch/AdvancedOptions._nEpochsUntilConvergence) + AdvancedOptions._dInitialLearningFactor;           
+            double posEpoch = ((double)epoch) / ((double)AdvancedOptions._nEpochsUntilConvergence);
+
+            return (AdvancedOptions._dFinalLearningFactor - AdvancedOptions._dInitialLearningFactor) * posEpoch + AdvancedOptions._dInitialLearningFactor;           
 
         }
 

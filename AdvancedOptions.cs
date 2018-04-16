@@ -17,17 +17,14 @@ namespace Kohonen
          *  Recommended value : Depending on the deepness wanted to obtain from the network
          */
 
-
-        //    !!!!!!!!! SET TO 100 
-
-        public static int _nNumberOfEpochs = 10;
+        public static int _nNumberOfEpochs = 100;
 
         /*  Use :               KohonenAlgorithm
-         *  Definition :        Size of the Kohonen map
+         *  Definition :        Size of the Kohonen map (X, Y)
          *  Recommended value : Depending on the number of different labeled inputs expected to be obtained
          */
 
-        public static int _nKohonenMapSize = 10;
+        public static int _nKohonenMapSizeX = 10, _nKohonenMapSizeY = 10;
 
         /*  Use :               KohonenAlgorithm
          *  Definition :        Size of the bitmap the network will work with
@@ -49,21 +46,23 @@ namespace Kohonen
         *  Recommended value :  Depending on the deepness the network is designed to have, as well as the expected number of labels, 
         *  in this case will be initialized as half of the map's size
         */
-
-        public static int _nInitialRadius = _nKohonenMapSize / 2,  _nFinalRadius = 1;
+        //(Comment toroidal /2)
+        public static int _nInitialRadius = (int)Math.Sqrt((Math.Pow(_nKohonenMapSizeX/2, 2) + Math.Pow(_nKohonenMapSizeY/2, 2))),  _nFinalRadius = 1;
 
         /*  Use :               KohonenAlgorithm
          *  Definition :        Number of epochs until the influence radius, as well as the learning factor, converge
          *  Recommended value : Will depend on the number of epochs, generally 70% / 80%
          */
 
-        public static int _nEpochsUntilConvergence = 70;
+        public static int _nEpochsUntilConvergence = 80;
 
         /*  Use :              KohonenAlgorithm
         *   Definition :        Factor that defines the rate in which the intensity of the modification after the best match in an epoch is found will diminish
         *                       when getting far from that best cell
-        *   Recommended value : 0.5, will depend on the global impact to the map we want to achieve in an iteration
+        *   Recommended value : 0.05, will depend on the global impact to the map we want to achieve in an iteration
         */
-        public static double _dMaxRadiusFactor = 0.5;
+        public static double _dMaxRadiusFactor = 0.05;
+           
+    
     }
 }

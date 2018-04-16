@@ -13,7 +13,7 @@
             <RowDefinition Height="70"/>
             <RowDefinition Height="50"/>
             <RowDefinition/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="100"/>
 
         </Grid.RowDefinitions>
 
@@ -23,44 +23,83 @@
 
         <Label HorizontalAlignment="Center" Grid.Row="1" Margin="10" VerticalAlignment="Bottom" FontSize="12" >Pick a mode</Label>
 
-        <Canvas Name="TestMode" Grid.Row="2" Width="100" VerticalAlignment="Top" Margin="-100,0,0,0" Height="30">
+        <Canvas Name="TrainMode" Grid.Row="2" Width="100" VerticalAlignment="Top" Margin="-100,0,0,0" Height="30">
             <Border BorderBrush="Black" BorderThickness="3" Height="30" Width="100"></Border>
-            <Label HorizontalAlignment="Center" Margin="28, 0, 0, 0" VerticalAlignment="Center" FontSize="15" >Train</Label>
+            <Label HorizontalAlignment="Center" Margin="28, 0, 0, 0" VerticalAlignment="Center" FontSize="17" >Train</Label>
         </Canvas>
 
-        <Canvas Name="TrainMode" Grid.Row="2" Width="100" VerticalAlignment="Top" Margin="100,0,0,0" Height="30">
+        <Canvas Name="TestMode" Grid.Row="2" Width="100" VerticalAlignment="Top" Margin="100,0,0,0" Height="30">
             <Border BorderBrush="Black" BorderThickness="3" Height="30" Width="100"></Border>
-            <Label HorizontalAlignment="Center" Margin="28, 0, 0, 0" VerticalAlignment="Center" FontSize="15" >Test</Label>
+            <Label HorizontalAlignment="Center" Margin="28, 0, 0, 0" VerticalAlignment="Center" FontSize="17" >Test</Label>
         </Canvas>
 
-        <Grid Name ="TrainGrid" Visibility="Visible" Margin="50" Grid.Row="2">
+        <Grid Name ="TrainGrid" Visibility="Hidden" Margin="50" Grid.Row="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+
+            </Grid.RowDefinitions>
             
             <!-- Title label -->
-            <Label Grid.Row="0" FontSize="25" FontFamily=""></Label>
+            <Label Grid.Row="0" FontSize="25" HorizontalAlignment="Center" FontFamily="Georgia"> Train Mode parameter input</Label>
             
-            <!-- Folder election button -->
-            <Button Height="25" Width="170" Grid.Row="2" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
-            <Label Name="TrainFolderImportLabel" Grid.Row="2" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+            <!-- Folder images election button -->
+            <Button Height="25" Width="190" Grid.Row="2" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="SourceTrain_Button_Click">Choose Source (images)</Button>
+            <Label Name="TrainFolderImportLabel" Grid.Row="2" Margin="250,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
 
             <!-- Folder save election button -->
-            <Button Height="25" Width="170" Grid.Row="2"  HorizontalAlignment ="Left" FontSize="17" Margin="500,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
-            <Label Name="TrainFolderSaveLabel" Grid.Row="2"  Margin="700,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+            <Button Height="25" Width="190" Grid.Row="4"  HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
+            <Label Name="TrainFolderSaveLabel" Grid.Row="4"  Margin="250,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
 
+            <!-- Folder labels election button -->
+            <Button Height="25" Width="190" Grid.Row="3"  HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Label_Button_Click">Choose Source (labels)</Button>
+            <Label Name="TrainLabelImportLabel" Grid.Row="3"  Margin="250,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+            
             <!-- Start button -->
-            <Button Height="25" Width="100"  Grid.Row="2" HorizontalAlignment ="Center" FontSize="17" Margin="0,200,0,0" Style="{StaticResource button1Style}" Click="Start_Button_Click">Start</Button>
+            <Button Height="25" Width="100" Grid.Row="6" HorizontalAlignment ="Right" FontSize="17" Margin="0,0,80,0" Style="{StaticResource button1Style}" Click="StartTrain_Button_Click">Start</Button>
+
+            <!-- Advanced settings button -->
+            <Button Grid.Column="0" Grid.Row="5" Height="25" Width="120" HorizontalAlignment="Left" Margin="50,0,0,0" Click="Modify_Advanced_Settings_Click">Advanced settings</Button>
+
         </Grid>
 
         <Grid Name ="TestGrid" Visibility="Hidden" Margin="50" Grid.Row="2">
-            <!-- Folder election button -->
-            <Button Height="25" Width="170" Grid.Row="2" HorizontalAlignment ="Left" FontSize="17" Margin="50,20,0,0" Style="{StaticResource button1Style}" Click="Source_Button_Click">Choose Source Folder</Button>
-            <Label Name="TestFolderImportLabel" Grid.Row="2" Margin="230,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
 
-            <!-- Folder save election button -->
-            <Button Height="25" Width="170" Grid.Row="2"  HorizontalAlignment ="Left" FontSize="17" Margin="500,20,0,0" Style="{StaticResource button1Style}" Click="Save_Button_Click">Choose Save Folder</Button>
-            <Label Name="TestFolderSaveLabel" Grid.Row="2"  Margin="700,20,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" FontSize="25" HorizontalAlignment="Center" FontFamily="Georgia">Test Mode parameter input</Label>
+
+            <!-- Folder election button -->
+            <Button Height="25" Width="170" Grid.Row="2" HorizontalAlignment ="Left" FontSize="17" Margin="50,15,0,0" Style="{StaticResource button1Style}" Click="SourceTest_Button_Click">Choose Network</Button>
+            <Label Name="TestFolderImportLabel" Grid.Row="2" Margin="230,15,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+
+            <!-- Test image election button -->
+            <Button Height="25" Width="170" Grid.Row="3"  HorizontalAlignment ="Left" FontSize="17" Margin="50,15,0,0" Style="{StaticResource button1Style}" Click="Image_Election_Click">Image to be tested</Button>
+            <Label Name="ImageElectionLabel" Grid.Row="3"  Margin="230,15,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left">Not defined</Label>
+            
+            <!-- Advanced settings button -->
+            <Button Grid.Column="0" Grid.Row="5" Height="25" Width="120" HorizontalAlignment="Left" Margin="50,0,0,0" Click="Modify_Advanced_Settings_Click">Advanced settings</Button>
 
             <!-- Start button -->
-            <Button Height="25" Width="100"  Grid.Row="2" HorizontalAlignment ="Center" FontSize="17" Margin="0,200,0,0" Style="{StaticResource button1Style}" Click="Start_Button_Click">Start</Button>
+            <Button Height="25" Width="100"  Grid.Row="6" HorizontalAlignment ="Right" FontSize="17" Margin="0,0,80,0" Style="{StaticResource button1Style}" Click="StartTest_Button_Click">Start</Button>
         </Grid>
+
+        <Label Grid.Row="3" FontSize="16" Margin="300,30,0,0" Foreground="DarkRed" HorizontalAlignment="Center" FontFamily="Georgia">The network is training</Label>
+        <StackPanel Name="trainingInProgressSP" Grid.Row="3" Margin="550,0,0,0" Width="80" Height="80"></StackPanel>
     </Grid>
 </Window>

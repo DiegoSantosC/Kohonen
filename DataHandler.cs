@@ -79,7 +79,7 @@ namespace Kohonen
             }
         }
 
-        public static object[] ProcessInputTrain(string folderImport)
+        public static object[] ProcessInputTrain(string folderImport, string fileLabels)
         {
             if (folderImport == "Not defined")
             {
@@ -126,19 +126,72 @@ namespace Kohonen
 
             // Label list will be filled manually for testing purposes s
 
-            labels.Add("Type A");
-            labels.Add("Type B");
-            labels.Add("Type C");
-            labels.Add("");
-            labels.Add("Type A");
-            labels.Add("Type B");
-            labels.Add("");
-            labels.Add("Type E");
-            labels.Add("Type E");
-            labels.Add("Type A");
-            labels.Add("Type B");
+            if (File.Exists(fileLabels))
+            {
+                string[] extension = fileLabels.Split('.');
+
+                // We will only accept as viable files for the analysis images (of a wide range of extensions)
+
+                if (extension[extension.Length - 1] != "txt" && extension[extension.Length - 1] != "xml")
+                {
+                    System.Windows.MessageBox.Show(fileLabels + " has not the right file extension");
+                    return null;
+                }
+
+                if(extension[extension.Length - 1] == "txt")
+                {
+                    labels = getLabelsFromTxtFile(fileLabels);
+                }else
+                {
+                    labels = getLabelsFromXmlFile(fileLabels);
+                }
+            }
 
             return new object[] { labels, sourceData };
+        }
+
+        private static List<string> getLabelsFromXmlFile(string fileLabels)
+        {
+            List<string> labels = new List<string>();
+
+            XmlReader r = new XmlTextReader(fileLabels);
+
+            try
+            {
+                while (r.Read())
+                {
+                    switch (r.NodeType)
+                    {
+                        case XmlNodeType.Attribute:
+
+                            labels.Add(r.Value.ToString());
+                            break;
+
+                        default: break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                System.Windows.MessageBox.Show("Error processing input. Make sure the input has the correct format.");
+                return null;
+            }
+
+            return labels;
+        }
+
+        private static List<string> getLabelsFromTxtFile(string fileLabels)
+        {
+            List<string> labels = new List<string>();
+
+            string[] lines = System.IO.File.ReadAllLines(fileLabels);  
+
+            for(int i = 0; i < lines.Length; i++)
+            {
+                labels.Add(lines[i]);
+            }
+
+            return labels;
         }
 
         private static System.Drawing.Image getImageFromFile(string path)
@@ -244,7 +297,6 @@ namespace Kohonen
                                         r.Read();
                                         r.Read();
                                         labels.Add(r.Value);
-                                        Console.WriteLine(r.Value);
                                         if(labels[labels.Count -1].Length > 1)
                                         {
                                             r.Read();
